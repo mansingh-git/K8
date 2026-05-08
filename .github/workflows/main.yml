@@ -1,9 +1,12 @@
-name: Deploy to Mansingh's Kind Cluster
+name: Deploy to Kind Cluster
 
 on:
   push:
     branches:
       - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true    # suppress warning
 
 jobs:
   deploy:
@@ -11,10 +14,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f deployment.yaml
           kubectl apply -f service.yaml
-          
+
+      - name: Verify rollout
+        run: kubectl rollout status deployment/flask-hello-world
